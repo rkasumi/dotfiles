@@ -1,0 +1,9 @@
+#compdef g8
+
+function _tasks () {
+  compadd rkasumi/Lift-Template --list
+}
+
+_arguments "*:task:_tasks"
+
+return 0

@@ -1,0 +1,23 @@
+[include]
+  path = .gitconfig.local
+
+[color]
+  diff = auto
+  status = auto
+  branch = auto
+  interactive = auto
+  grep = auto
+
+[core]
+  excludesfile = ~/.gitignore.global # globalな.gitignoreの指定
+  autocrlf = input                 # CRLFを自動変換
+
+[alias]
+  co = checkout
+  # logをtree表示
+  log-graph = log --graph --date=short --pretty=format:'%Cgreen%h %cd %Cblue%cn %Creset%s'
+  log-all = log --graph --all --color --pretty='%x09%h %cn%x09%s %Cred%d%Creset'
+
+[tig "bind"]
+  generic = g move-first-line
+  generic = G move-last-line

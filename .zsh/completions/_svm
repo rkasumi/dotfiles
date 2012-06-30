@@ -1,0 +1,9 @@
+#compdef svm
+
+function _tasks () {
+  compadd current list install remove switch update-latest latest stable help --no-docs --no-sources
+}
+
+_arguments "*:task:_tasks"
+
+return 0
