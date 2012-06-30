@@ -18,20 +18,7 @@ esac
 bindkey -v
 
 # プロンプト設定
-function zle-line-init zle-keymap-select {
-  case $KEYMAP in
-    vicmd)
-    PROMPT="%B%F{red}[%~] # %f%b"
-    ;;
-    main|viins)
-    PROMPT="%B%F{red}[%~] $ %f%b"
-    ;;
-  esac
-  zle reset-prompt
-}
-zle -N zle-line-init
-zle -N zle-keymap-select
-
+PROMPT="%B%F{red}[%~] # %f%b"
 PROMPT2="%B%{[31m%}#%{[m%}%b "
 SPROMPT="%B%{[31m%}%r is correct? [n,y,a,e]:%{[m%}%b "
 
