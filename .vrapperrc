@@ -6,13 +6,16 @@ set hlsearch
 set incsearch
 set imd
 
+" スクロール関係
+nnoremap <C-u> 20<Up>
+nnoremap <C-d> 20<Down>
+
 " 入力モード中にC-dでバックスペース, C-a C-eでHOME/END
 inoremap <C-h> <BS>
 inoremap <C-a> <Esc>0i
 inoremap <C-e> <Esc>A
 
 " リドゥ
-nnoremap U :redo<CR>
 nnoremap <Esc><Esc> :nohlsearch<CR>
 
 " コメントトグル ,x
