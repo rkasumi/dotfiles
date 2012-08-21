@@ -37,6 +37,7 @@ NeoBundle 'vim-scripts/TwitVim' "Twitter
 NeoBundle 'mattn/gist-vim' "Gist.vim
 NeoBundle 'mattn/webapi-vim' "Web-API
 NeoBundle 'thinca/vim-ref' "Vim-Ref
+NeoBundle 'vim-scripts/renamer.vim' "rename
 
 """ Programming/Syntax
 NeoBundle 'thinca/vim-quickrun' " QuickRun
@@ -279,12 +280,6 @@ hi PmenuSbar ctermbg=0 ctermfg=9
 "-------------------------------------------------------------------------------
 " 編集関連 Edit
 "-------------------------------------------------------------------------------
-" insertモードを抜けるとIMEオフ(ショートカットキーでは不可能 - jj, C-c, 英数＋かななど)
-set noimdisable
-set iminsert=0 imsearch=0
-set noimcmdline
-inoremap <silent> <ESC> <ESC>:set iminsert=0<CR>
-
 " C-hでバックスペース
 inoremap <C-h> <BS>
 
