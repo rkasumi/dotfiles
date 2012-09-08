@@ -74,6 +74,7 @@ setopt hist_ignore_dups     # ignore duplication command history list
 setopt hist_ignore_all_dups # ignore duplication command history list
 setopt share_history        # share command history data
 setopt append_history       # zshを複数使う場合にファイルに上書きせず追加
+function history-all { history -E 1 }
 
 # オプション設定
 setopt auto_cd # cd省略可
