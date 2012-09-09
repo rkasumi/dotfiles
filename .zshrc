@@ -15,7 +15,7 @@ linux*)
 esac
 
 # key bind -v = vim -e = emacs
-bindkey -v
+bindkey -e
 
 # プロンプト設定
 PROMPT="%B%F{red}[%~] # %f%b"
