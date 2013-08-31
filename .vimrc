@@ -20,7 +20,7 @@ NeoBundle 'Shougo/neobundle.vim'
 """ Edit
 NeoBundle 'The-NERD-Commenter' " NERD_commenter.vim :コメント処理
 NeoBundle 'nathanaelkane/vim-indent-guides' " インデントを表示する
-NeoBundle 'tpope/surround.vim' "テキストを括弧で囲む／削除する
+NeoBundle 'tpope/vim-surround' "テキストを括弧で囲む／削除する
 NeoBundle 'h1mesuke/vim-alignta' " コード整形
 
 """ Completion/Move/Search/Encoding
@@ -367,14 +367,14 @@ command! Sjis Cp932
 "-------------------------------------------------------------------------------
 " テンプレート設定 template
 "-------------------------------------------------------------------------------
-autocmd BufNewFile *.c  	0r ~/.vim/template/c.c
-autocmd BufNewFile *.cpp  	0r ~/.vim/template/cpp.cpp
-autocmd BufNewFile *.java 	0r ~/.vim/template/java.java
-autocmd BufNewFile *.php 	0r ~/.vim/template/php.php
-autocmd BufNewFile *.html 	0r ~/.vim/template/html.html
-autocmd BufNewFile *.js 	0r ~/.vim/template/js.js
-autocmd BufNewFile *.coffee 	0r ~/.vim/template/coffee.coffee
-autocmd BufNewFile *.pl 	0r ~/.vim/template/perl.pl
+autocmd BufNewFile *.c    0r ~/.vim/template/c.c
+autocmd BufNewFile *.cpp    0r ~/.vim/template/cpp.cpp
+autocmd BufNewFile *.java   0r ~/.vim/template/java.java
+autocmd BufNewFile *.php   0r ~/.vim/template/php.php
+autocmd BufNewFile *.html   0r ~/.vim/template/html.html
+autocmd BufNewFile *.js   0r ~/.vim/template/js.js
+autocmd BufNewFile *.coffee   0r ~/.vim/template/coffee.coffee
+autocmd BufNewFile *.pl   0r ~/.vim/template/perl.pl
 
 function! s:pm_template()
     let path = substitute(expand('%'), '.*lib/', '', 'g')
@@ -534,9 +534,9 @@ let g:lightline = {
         \   'filetype': 'MyFiletype',
         \   'fileencoding': 'MyFileencoding',
         \   'mode': 'MyMode'
-        \ }, 
-	\ 'separator': { 'left': '⮀', 'right': '⮂' },
-      	\ 'subseparator': { 'left': '⮁', 'right': '⮃' }
+        \ },
+  \ 'separator': { 'left': '⮀', 'right': '⮂' },
+        \ 'subseparator': { 'left': '⮁', 'right': '⮃' }
         \ }
 
 function! MyModified()
@@ -596,7 +596,7 @@ if s:meet_neocomplete_requirements()
     let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
     " 補完候補の一番先頭を選択状態にする(AutoComplPopと似た動作)
     let g:neocomplete#enable_auto_select = 1
-    
+
     " Define dictionary.
     let g:neocomplete#sources#dictionary#dictionaries = {
         \ 'default' : '',
@@ -612,7 +612,7 @@ if s:meet_neocomplete_requirements()
         \ 'scheme' : $HOME.'/.vim/dict/scheme.dict',
         \ 'vim' : $HOME.'/.vim/dict/vim.dict'
         \}
-    
+
     " 補完のキーマッピング
     " 補完候補が出ていたら確定、なければ改行
     inoremap <expr><CR>  pumvisible() ? neocomplete#close_popup() : "<CR>"
@@ -621,7 +621,7 @@ if s:meet_neocomplete_requirements()
     inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
     " 補完をキャンセルしpopupを閉じる
     inoremap <expr><C-e> neocomplete#cancel_popup()
-    
+
     " FileType毎のOmni補完を設定
     autocmd FileType python set omnifunc=pythoncomplete#Complete
     autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
@@ -648,7 +648,7 @@ else
     let g:neocomplcache_enable_quick_match = 1
     " 補完候補の一番先頭を選択状態にする(AutoComplPopと似た動作)
     let g:neocomplcache_enable_auto_select = 1
-    
+
     " Define dictionary.
     let g:neocomplcache_dictionary_filetype_lists = {
         \ 'default' : '',
@@ -673,7 +673,7 @@ else
     inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
     " 補完をキャンセルしpopupを閉じる
     inoremap <expr><C-e> neocomplcache#cancel_popup()
-    
+
     " FileType毎のOmni補完を設定
     autocmd FileType python set omnifunc=pythoncomplete#Complete
     autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
@@ -684,7 +684,7 @@ else
     autocmd FileType c set omnifunc=ccomplete#Complete
     autocmd FileType ruby set omnifunc=rubycomplete#Complete
 endif
-    
+
 " NeoComplChache 補完候補の色づけ
 hi Pmenu ctermbg=white ctermfg=darkgray
 hi PmenuSel ctermbg=12 ctermfg=black
@@ -697,11 +697,11 @@ xmap <C-k>     <Plug>(neosnippet_expand_target)
 
 " スニペット・補完をTABで
 imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-	\ "\<Plug>(neosnippet_expand_or_jump)"
-	\: pumvisible() ? "\<C-n>" : "\<TAB>"
+  \ "\<Plug>(neosnippet_expand_or_jump)"
+  \: pumvisible() ? "\<C-n>" : "\<TAB>"
 smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-	\ "\<Plug>(neosnippet_expand_or_jump)"
-	\: "\<TAB>"
+  \ "\<Plug>(neosnippet_expand_or_jump)"
+  \: "\<TAB>"
 
 " For snippet_complete marker.
 if has('conceal')
