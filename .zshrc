@@ -6,8 +6,6 @@ case "${OSTYPE}" in
 darwin*)
   export JAVA_HOME='/Library/Java/Home'
   export JAVA_OPTS='-Dfile.encoding=UTF-8'
-  export SCALA_HOME='/usr/local/Cellar/scala/2.9.2/'
-  export CATALINA_HOME='/usr/local/Cellar/tomcat/7.0.21/libexec/'
   export PATH=/usr/local/bin:$PATH
   ;;
 linux*)
@@ -21,38 +19,6 @@ bindkey -e
 PROMPT="%B%F{red}[%~] # %f%b"
 PROMPT2="%B%{[31m%}#%{[m%}%b "
 SPROMPT="%B%{[31m%}%r is correct? [n,y,a,e]:%{[m%}%b "
-
-# 右プロンプトにgitリポジトリの表示
-autoload -Uz VCS_INFO_get_data_git; VCS_INFO_get_data_git 2> /dev/null
-
-setopt prompt_subst
-setopt re_match_pcre
-
-function rprompt-git-current-branch {
-  local name st color gitdir action
-  if [[ "$PWD" =~ '/\.git(/.*)?$' ]]; then
-    return
-  fi
-  name=`git rev-parse --abbrev-ref=loose HEAD 2> /dev/null`
-  if [[ -z $name ]]; then
-    return
-  fi
-  gitdir=`git rev-parse --git-dir 2> /dev/null`
-  action=`VCS_INFO_git_getaction "$gitdir"` && action="($action)"
-  st=`git status 2> /dev/null`
-  if [[ "$st" =~ "(?m)^nothing to" ]]; then
-    color=%F{green}
-  elif [[ "$st" =~ "(?m)^nothing added" ]]; then
-    color=%F{yellow}
-  elif [[ "$st" =~ "(?m)^# Untracked" ]]; then
-    color=%B%F{red}
-  else
-    color=%F{red}
-  fi
-  echo "$color$name$action%f%b"
-}
-
-RPROMPT='[$(rprompt-git-current-branch)]'
 
 # 標準のエディタをvimに設定 vimがなければviに
 export EDITOR=vim
@@ -68,8 +34,8 @@ zstyle ':completion:*:default' menu select # 十字キーで補完候補を選�
 
 # 履歴
 HISTFILE=~/.zsh_history
-HISTSIZE=10000
-SAVEHIST=10000
+HISTSIZE=50000
+SAVEHIST=50000
 setopt hist_ignore_dups     # ignore duplication command history list
 setopt hist_ignore_all_dups # ignore duplication command history list
 setopt share_history        # share command history data
@@ -152,5 +118,8 @@ darwin*)
 linux-gnu*)
   # ubuntu用
   alias ls="ls -FGh --color=auto"
+  alias cpanm="nocorrect cpanm"
   ;;
 esac
+
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local
