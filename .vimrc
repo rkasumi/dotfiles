@@ -13,7 +13,6 @@ if has('vim_starting')
   call neobundle#rc(expand('~/.vim/bundle'))
 endif
 
-
 """ NeoBundle
 NeoBundle 'Shougo/neobundle.vim'
 
@@ -535,8 +534,6 @@ let g:lightline = {
         \   'fileencoding': 'MyFileencoding',
         \   'mode': 'MyMode'
         \ },
-  \ 'separator': { 'left': '⮀', 'right': '⮂' },
-        \ 'subseparator': { 'left': '⮁', 'right': '⮃' }
         \ }
 
 function! MyModified()
@@ -544,7 +541,7 @@ function! MyModified()
 endfunction
 
 function! MyReadonly()
-  return &ft !~? 'help\|vimfiler\|gundo' && &readonly ? '⭤' : ''
+  return &ft !~? 'help\|vimfiler\|gundo' && &readonly ? 'x' : ''
 endfunction
 
 function! MyFilename()
@@ -616,11 +613,8 @@ if s:meet_neocomplete_requirements()
     " 補完のキーマッピング
     " 補完候補が出ていたら確定、なければ改行
     inoremap <expr><CR>  pumvisible() ? neocomplete#close_popup() : "<CR>"
-    " <C-h>, <BS>: 補完候補を閉じる
-    inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-    inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
     " 補完をキャンセルしpopupを閉じる
-    inoremap <expr><C-e> neocomplete#cancel_popup()
+    inoremap <expr><C-g> neocomplete#cancel_popup()
 
     " FileType毎のOmni補完を設定
     autocmd FileType python set omnifunc=pythoncomplete#Complete
@@ -668,11 +662,8 @@ else
     " 補完のキーマッピング
     " 補完候補が出ていたら確定、なければ改行
     inoremap <expr><CR>  pumvisible() ? neocomplcache#close_popup() : "<CR>"
-    " <C-h>, <BS>: 補完候補を閉じる
-    inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
-    inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
     " 補完をキャンセルしpopupを閉じる
-    inoremap <expr><C-e> neocomplcache#cancel_popup()
+    inoremap <expr><C-g> neocomplcache#cancel_popup()
 
     " FileType毎のOmni補完を設定
     autocmd FileType python set omnifunc=pythoncomplete#Complete
@@ -694,14 +685,6 @@ hi PmenuSbar ctermbg=0 ctermfg=9
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
-
-" スニペット・補完をTABで
-imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-  \ "\<Plug>(neosnippet_expand_or_jump)"
-  \: pumvisible() ? "\<C-n>" : "\<TAB>"
-smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-  \ "\<Plug>(neosnippet_expand_or_jump)"
-  \: "\<TAB>"
 
 " For snippet_complete marker.
 if has('conceal')
