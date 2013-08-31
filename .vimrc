@@ -18,23 +18,32 @@ endif
 NeoBundle 'Shougo/neobundle.vim'
 
 """ Edit
-NeoBundle 'The-NERD-Commenter' " NERD_commenter.vim :最強コメント処理
+NeoBundle 'The-NERD-Commenter' " NERD_commenter.vim :コメント処理
 NeoBundle 'nathanaelkane/vim-indent-guides' " インデントを表示する
 NeoBundle 'tpope/surround.vim' "テキストを括弧で囲む／削除する
 NeoBundle 'h1mesuke/vim-alignta' " コード整形
 
 """ Completion/Move/Search/Encoding
-NeoBundle 'Shougo/neocomplcache' " 補完プラグイン
-NeoBundle 'Shougo/neocomplcache-snippets-complete'
+" 補完プラグイン
+function! s:meet_neocomplete_requirements()
+    return has('lua') && (v:version > 703 || (v:version == 703 && has('patch885')))
+endfunction
+
+if s:meet_neocomplete_requirements()
+    NeoBundle 'Shougo/neocomplete.vim'
+    NeoBundleFetch 'Shougo/neocomplcache.vim'
+else
+    NeoBundleFetch 'Shougo/neocomplete.vim'
+    NeoBundle 'Shougo/neocomplcache.vim'
+endif
+NeoBundle 'Shougo/neosnippet' " スニペット
 NeoBundle 'camelcasemotion' " CamelCase/snake_case単位でのワード移動
 NeoBundle 'EasyMotion' " 単語ジャンプを簡単に
 NeoBundle 'banyan/recognize_charcode.vim' " 文字コードの自動判別
 
 """ Utility
-NeoBundle 'Lokaltog/vim-powerline.git' " ステータスバーをカッコよく
+NeoBundle 'itchyny/lightline.vim' " ステータスバーをカッコよく
 NeoBundle 'minibufexpl.vim' "バッファをタブ風管理
-NeoBundle 'vim-scripts/TwitVim' "Twitter
-NeoBundle 'mattn/gist-vim' "Gist.vim
 NeoBundle 'mattn/webapi-vim' "Web-API
 NeoBundle 'thinca/vim-ref' "Vim-Ref
 NeoBundle 'vim-scripts/renamer.vim' "rename
@@ -69,7 +78,7 @@ filetype indent on
 "-------------------------------------------------------------------------------
 " 基本設定 Basics
 "-------------------------------------------------------------------------------
-let mapleader = ","              " キーマップリーダー
+" let mapleader = ","              " キーマップリーダー
 set scrolloff=5                  " スクロール時の余白確保
 set textwidth=0                  " 一行に長い文章を書いていても自動折り返しをしない
 set nobackup                     " バックアップ取らない
@@ -306,11 +315,6 @@ autocmd BufWritePre * :%s/\s\+$//ge
 " 保存時にtabをスペースに変換する
 autocmd BufWritePre * :%s/\t/  /ge
 
-" 日時の自動入力
-inoremap <expr> ,df strftime('%Y/%m/%d %H:%M:%S')
-inoremap <expr> ,dd strftime('%Y/%m/%d')
-inoremap <expr> ,dt strftime('%H:%M:%S')
-
 " <leader>j でJSONをformat
 " http://wozozo.hatenablog.com/entry/2012/02/08/121504
 map <Leader>j !python -m json.tool<CR>
@@ -347,6 +351,7 @@ autocmd FileType html     :set fileencoding=utf-8
 autocmd FileType xml      :set fileencoding=utf-8
 autocmd FileType java     :set fileencoding=utf-8
 autocmd FileType scala    :set fileencoding=utf-8
+autocmd FileType perl     :set fileencoding=utf-8
 
 " ワイルドカードで表示するときに優先度を低くする拡張子
 set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc
@@ -362,13 +367,30 @@ command! Sjis Cp932
 "-------------------------------------------------------------------------------
 " テンプレート設定 template
 "-------------------------------------------------------------------------------
-autocmd BufNewFile *.c  0r ~/.vim/template/c.c
-autocmd BufNewFile *.cpp  0r ~/.vim/template/cpp.cpp
-autocmd BufNewFile *.java 0r ~/.vim/template/java.java
-autocmd BufNewFile *.php 0r ~/.vim/template/php.php
-autocmd BufNewFile *.html 0r ~/.vim/template/html.html
-autocmd BufNewFile *.js 0r ~/.vim/template/js.js
-autocmd BufNewFile *.coffee 0r ~/.vim/template/coffee.coffee
+autocmd BufNewFile *.c  	0r ~/.vim/template/c.c
+autocmd BufNewFile *.cpp  	0r ~/.vim/template/cpp.cpp
+autocmd BufNewFile *.java 	0r ~/.vim/template/java.java
+autocmd BufNewFile *.php 	0r ~/.vim/template/php.php
+autocmd BufNewFile *.html 	0r ~/.vim/template/html.html
+autocmd BufNewFile *.js 	0r ~/.vim/template/js.js
+autocmd BufNewFile *.coffee 	0r ~/.vim/template/coffee.coffee
+autocmd BufNewFile *.pl 	0r ~/.vim/template/perl.pl
+
+function! s:pm_template()
+    let path = substitute(expand('%'), '.*lib/', '', 'g')
+    let path = substitute(path, '[\\/]', '::', 'g')
+    let path = substitute(path, '\.pm$', '', 'g')
+    call append(0, 'package ' . path . ';')
+    call append(1, 'use strict;')
+    call append(2, 'use warnings;')
+    call append(3, 'use utf8;')
+    call append(4, '')
+    call append(5, '')
+    call append(6, '')
+    call append(7, '1;')
+    call cursor(6, 0)
+endfunction
+autocmd BufNewFile *.pm call s:pm_template()
 
 "-------------------------------------------------------------------------------
 " プラグインごとの設定 Plugins
@@ -495,79 +517,200 @@ cnoremap UO Unite outline<Enter>
 let g:quickrun_config = {}
 
 "------------------------------------
-" PowerLine
+" LightLine
 "------------------------------------
-let g:Powerline_symbols = 'fancy'
-set t_Co=256
+let g:lightline = {
+        \ 'colorscheme': 'wombat',
+        \ 'mode_map': {'c': 'NORMAL'},
+        \ 'active': {
+        \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ] ]
+        \ },
+        \ 'component_function': {
+        \   'modified': 'MyModified',
+        \   'readonly': 'MyReadonly',
+        \   'fugitive': 'MyFugitive',
+        \   'filename': 'MyFilename',
+        \   'fileformat': 'MyFileformat',
+        \   'filetype': 'MyFiletype',
+        \   'fileencoding': 'MyFileencoding',
+        \   'mode': 'MyMode'
+        \ }, 
+	\ 'separator': { 'left': '⮀', 'right': '⮂' },
+      	\ 'subseparator': { 'left': '⮁', 'right': '⮃' }
+        \ }
+
+function! MyModified()
+  return &ft =~ 'help\|vimfiler\|gundo' ? '' : &modified ? '+' : &modifiable ? '' : '-'
+endfunction
+
+function! MyReadonly()
+  return &ft !~? 'help\|vimfiler\|gundo' && &readonly ? '⭤' : ''
+endfunction
+
+function! MyFilename()
+  return ('' != MyReadonly() ? MyReadonly() . ' ' : '') .
+        \ (&ft == 'vimfiler' ? vimfiler#get_status_string() :
+        \  &ft == 'unite' ? unite#get_status_string() :
+        \  &ft == 'vimshell' ? vimshell#get_status_string() :
+        \ '' != expand('%:t') ? expand('%:t') : '[No Name]') .
+        \ ('' != MyModified() ? ' ' . MyModified() : '')
+endfunction
+
+function! MyFugitive()
+  try
+    if &ft !~? 'vimfiler\|gundo' && exists('*fugitive#head')
+      return fugitive#head()
+    endif
+  catch
+  endtry
+  return ''
+endfunction
+
+function! MyFileformat()
+  return winwidth('.') > 70 ? &fileformat : ''
+endfunction
+
+function! MyFiletype()
+  return winwidth('.') > 70 ? (strlen(&filetype) ? &filetype : 'no ft') : ''
+endfunction
+
+function! MyFileencoding()
+  return winwidth('.') > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
+endfunction
+
+function! MyMode()
+  return winwidth('.') > 60 ? lightline#mode() : ''
+endfunction
 
 "------------------------------------
-" neocomplecache.vim
+" NeoComplete
 "------------------------------------
-" NeoComplCacheを有効にする
-let g:neocomplcache_enable_at_startup = 1
-" smarrt case有効化。 大文字が入力されるまで大文字小文字の区別を無視する
-let g:neocomplcache_enable_smart_case = 1
-" camle caseを有効化。大文字を区切りとしたワイルドカードのように振る舞う
-let g:neocomplcache_enable_camel_case_completion = 1
-" _(アンダーバー)区切りの補完を有効化
-let g:neocomplcache_enable_underbar_completion = 1
-" シンタックスをキャッシュするときの最小文字長を3に
-let g:neocomplcache_min_syntax_length = 3
-" neocomplcacheを自動的にロックするバッファ名のパターン
-let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
-" -入力による候補番号の表示
-let g:neocomplcache_enable_quick_match = 1
-" 補完候補の一番先頭を選択状態にする(AutoComplPopと似た動作)
-let g:neocomplcache_enable_auto_select = 1
+if s:meet_neocomplete_requirements()
+    " neocomplete の設定
+    let g:neocomplete#enable_at_startup = 1
+    " smarrt case有効化。 大文字が入力されるまで大文字小文字の区別を無視する
+    let g:neocomplete#enable_smart_case = 1
+    " シンタックスをキャッシュするときの最小文字長を3に
+    let g:neocomplete#sources#syntax#min_keyword_length = 3
+    " neocomplcacheを自動的にロックするバッファ名のパターン
+    let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+    " 補完候補の一番先頭を選択状態にする(AutoComplPopと似た動作)
+    let g:neocomplete#enable_auto_select = 1
+    
+    " Define dictionary.
+    let g:neocomplete#sources#dictionary#dictionaries = {
+        \ 'default' : '',
+        \ 'scala' : $HOME.'/.vim/dict/scala.dict',
+        \ 'java' : $HOME.'/.vim/dict/java.dict',
+        \ 'c' : $HOME.'/.vim/dict/c.dict',
+        \ 'cpp' : $HOME.'/.vim/dict/cpp.dict',
+        \ 'javascript' : $HOME.'/.vim/dict/javascript.dict',
+        \ 'coffee' : $HOME.'/.vim/dict/javascript.dict',
+        \ 'ocaml' : $HOME.'/.vim/dict/ocaml.dict',
+        \ 'perl' : $HOME.'/.vim/dict/perl.dict',
+        \ 'php' : $HOME.'/.vim/dict/php.dict',
+        \ 'scheme' : $HOME.'/.vim/dict/scheme.dict',
+        \ 'vim' : $HOME.'/.vim/dict/vim.dict'
+        \}
+    
+    " 補完のキーマッピング
+    " 補完候補が出ていたら確定、なければ改行
+    inoremap <expr><CR>  pumvisible() ? neocomplete#close_popup() : "<CR>"
+    " <C-h>, <BS>: 補完候補を閉じる
+    inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+    inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+    " 補完をキャンセルしpopupを閉じる
+    inoremap <expr><C-e> neocomplete#cancel_popup()
+    
+    " FileType毎のOmni補完を設定
+    autocmd FileType python set omnifunc=pythoncomplete#Complete
+    autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
+    autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
+    autocmd FileType css set omnifunc=csscomplete#CompleteCSS
+    autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
+    autocmd FileType php set omnifunc=phpcomplete#CompletePHP
+    autocmd FileType c set omnifunc=ccomplete#Complete
+    autocmd FileType ruby set omnifunc=rubycomplete#Complete
+else
+    " neocomplcache の設定
+    let g:neocomplcache_enable_at_startup = 1
+    " smarrt case有効化。 大文字が入力されるまで大文字小文字の区別を無視する
+    let g:neocomplcache_enable_smart_case = 1
+    " camle caseを有効化。大文字を区切りとしたワイルドカードのように振る舞う
+    let g:neocomplcache_enable_camel_case_completion = 1
+    " _(アンダーバー)区切りの補完を有効化
+    let g:neocomplcache_enable_underbar_completion = 1
+    " シンタックスをキャッシュするときの最小文字長を3に
+    let g:neocomplcache_min_syntax_length = 3
+    " neocomplcacheを自動的にロックするバッファ名のパターン
+    let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
+    " -入力による候補番号の表示
+    let g:neocomplcache_enable_quick_match = 1
+    " 補完候補の一番先頭を選択状態にする(AutoComplPopと似た動作)
+    let g:neocomplcache_enable_auto_select = 1
+    
+    " Define dictionary.
+    let g:neocomplcache_dictionary_filetype_lists = {
+        \ 'default' : '',
+        \ 'scala' : $HOME.'/.vim/dict/scala.dict',
+        \ 'java' : $HOME.'/.vim/dict/java.dict',
+        \ 'c' : $HOME.'/.vim/dict/c.dict',
+        \ 'cpp' : $HOME.'/.vim/dict/cpp.dict',
+        \ 'javascript' : $HOME.'/.vim/dict/javascript.dict',
+        \ 'coffee' : $HOME.'/.vim/dict/javascript.dict',
+        \ 'ocaml' : $HOME.'/.vim/dict/ocaml.dict',
+        \ 'perl' : $HOME.'/.vim/dict/perl.dict',
+        \ 'php' : $HOME.'/.vim/dict/php.dict',
+        \ 'scheme' : $HOME.'/.vim/dict/scheme.dict',
+        \ 'vim' : $HOME.'/.vim/dict/vim.dict'
+        \}
 
+    " 補完のキーマッピング
+    " 補完候補が出ていたら確定、なければ改行
+    inoremap <expr><CR>  pumvisible() ? neocomplcache#close_popup() : "<CR>"
+    " <C-h>, <BS>: 補完候補を閉じる
+    inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
+    inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
+    " 補完をキャンセルしpopupを閉じる
+    inoremap <expr><C-e> neocomplcache#cancel_popup()
+    
+    " FileType毎のOmni補完を設定
+    autocmd FileType python set omnifunc=pythoncomplete#Complete
+    autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
+    autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
+    autocmd FileType css set omnifunc=csscomplete#CompleteCSS
+    autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
+    autocmd FileType php set omnifunc=phpcomplete#CompletePHP
+    autocmd FileType c set omnifunc=ccomplete#Complete
+    autocmd FileType ruby set omnifunc=rubycomplete#Complete
+endif
+    
 " NeoComplChache 補完候補の色づけ
 hi Pmenu ctermbg=white ctermfg=darkgray
 hi PmenuSel ctermbg=12 ctermfg=black
 hi PmenuSbar ctermbg=0 ctermfg=9
 
-" Define dictionary.
-let g:neocomplcache_dictionary_filetype_lists = {
-    \ 'default' : '',
-    \ 'scala' : $HOME.'/.vim/dict/scala.dict',
-    \ 'java' : $HOME.'/.vim/dict/java.dict',
-    \ 'c' : $HOME.'/.vim/dict/c.dict',
-    \ 'cpp' : $HOME.'/.vim/dict/cpp.dict',
-    \ 'javascript' : $HOME.'/.vim/dict/javascript.dict',
-    \ 'coffee' : $HOME.'/.vim/dict/javascript.dict',
-    \ 'ocaml' : $HOME.'/.vim/dict/ocaml.dict',
-    \ 'perl' : $HOME.'/.vim/dict/perl.dict',
-    \ 'php' : $HOME.'/.vim/dict/php.dict',
-    \ 'scheme' : $HOME.'/.vim/dict/scheme.dict',
-    \ 'vim' : $HOME.'/.vim/dict/vim.dict'
-    \}
-
-" ユーザー定義スニペット保存ディレクトリ
-let g:neocomplcache_snippets_dir = $HOME.'/.vim/snippets'
-
 " スニペット
-imap <C-l> <Plug>(neocomplcache_snippets_expand)
-smap <C-l> <Plug>(neocomplcache_snippets_expand)
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
 
-" 補完・スニペッドのキーマッピング
-" TABで補完できるようにする
-inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-" 補完候補が出ていたら確定、なければ改行
-inoremap <expr><CR>  pumvisible() ? neocomplcache#close_popup() : "<CR>"
-" <C-h>, <BS>: 補完候補を閉じる
-inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
-inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
-" 補完をキャンセルしpopupを閉じる
-inoremap <expr><C-e> neocomplcache#cancel_popup()
+" スニペット・補完をTABで
+imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+	\ "\<Plug>(neosnippet_expand_or_jump)"
+	\: pumvisible() ? "\<C-n>" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+	\ "\<Plug>(neosnippet_expand_or_jump)"
+	\: "\<TAB>"
 
-" FileType毎のOmni補完を設定
-autocmd FileType python set omnifunc=pythoncomplete#Complete
-autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
-autocmd FileType css set omnifunc=csscomplete#CompleteCSS
-autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
-autocmd FileType php set omnifunc=phpcomplete#CompletePHP
-autocmd FileType c set omnifunc=ccomplete#Complete
-autocmd FileType ruby set omnifunc=rubycomplete#Complete
+" For snippet_complete marker.
+if has('conceal')
+  set conceallevel=2 concealcursor=i
+endif
+
+" スニペットの配置ディレクトリ
+let g:neosnippet#enable_snipmate_compatibility = 1
+let g:neosnippet#snippets_directory='~/.vim/snippets/'
 
 "------------------------------------
 " Vim-Ref

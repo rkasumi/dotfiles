@@ -6,11 +6,9 @@
 !/.zsh
 !/.vimrc
 !/.vim
-!/.vrapperrc
 !/.dotfiles
 /.vim/bundle
 !/.gitconfig
 !/.gitignore
 !/.gitignore.global
 !/.tmux.conf
-!/.sbtconfig
