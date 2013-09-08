@@ -1,0 +1,61 @@
+# documentation: if the snippet is prefixed by lines that start "## ", those can be used by
+# a pre-processor script to create a quickref. the idea is that you can print such a file
+# out and have it for quick reference while learning how to use the snippets for that
+# particular language.
+#
+
+# constructor
+snippet class
+  sub new {
+    my $class = shift;
+    my $self = ${1:Vars-hash};
+
+    ${2}
+
+    return bless $self, $class;
+  }
+
+# subclass
+snippet sclass
+  use base qw(${1:BaseClass});
+
+  sub new {
+    my $class = shift;
+    my $self = ${1:BaseClass}->new(@_);
+
+    ${2}
+
+    return bless $self, $class;
+  }
+
+# method
+snippet sub
+  sub ${1:method} {
+    my (${2:value}) = @_;
+
+    ${2}
+  }
+
+## if conditional
+snippet if
+  if (${1:condition}) {
+      ${2:// expression}
+  }
+snippet ifelse
+  if (${1:condition}) {
+      ${2:// expression}
+  } else {
+
+  }
+
+snippet foreach
+  foreach my {${1:data} (${2:array}) {
+    ${3}
+  }
+snippet try
+  eval {
+      ${2:// expression}
+  };
+  if($@) {
+    ${3}
+  }

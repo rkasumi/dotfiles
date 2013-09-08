@@ -42,10 +42,17 @@ NeoBundle 'banyan/recognize_charcode.vim' " 文字コードの自動判別
 
 """ Utility
 NeoBundle 'itchyny/lightline.vim' " ステータスバーをカッコよく
-NeoBundle 'minibufexpl.vim' "バッファをタブ風管理
 NeoBundle 'mattn/webapi-vim' "Web-API
 NeoBundle 'thinca/vim-ref' "Vim-Ref
 NeoBundle 'vim-scripts/renamer.vim' "rename
+NeoBundle 'Shougo/vimproc', {
+  \ 'build' : {
+    \ 'windows' : 'make -f make_mingw32.mak',
+    \ 'cygwin' : 'make -f make_cygwin.mak',
+    \ 'mac' : 'make -f make_mac.mak',
+    \ 'unix' : 'make -f make_unix.mak',
+  \ },
+  \ }
 
 """ Programming/Syntax
 NeoBundle 'thinca/vim-quickrun' " QuickRun
@@ -61,15 +68,17 @@ NeoBundle 'tpope/vim-rails' " Rails
 NeoBundle 'derekwyatt/vim-sbt' " sbt
 NeoBundle 'Rip-Rip/clang_complete' " C/C++
 NeoBundle 'osyo-manga/neocomplcache-clang_complete' " C/C++
+NeoBundle 'hotchpotch/perldoc-vim' " PerlDoc
 
 """ Unite.vim
 NeoBundle 'Shougo/unite.vim'
-NeoBundle 'tsukkee/unite-help'
-NeoBundle 'thinca/vim-unite-history'
+NeoBundle 'tsukkee/unite-help' "Unite  Help
+NeoBundle 'thinca/vim-unite-history' "Unite 履歴
 NeoBundle 'ujihisa/unite-colorscheme' "Unite colorscheme
 NeoBundle 'sgur/unite-qf' "Unite QuickFix
 NeoBundle 'h1mesuke/unite-outline' "Unite outline
 NeoBundle 'tacroe/unite-mark' " Unite mark
+NeoBundle 'dameninngenn/unite-perldoc' " Unite PerlDoc
 
 filetype plugin on
 filetype indent on
@@ -77,7 +86,7 @@ filetype indent on
 "-------------------------------------------------------------------------------
 " 基本設定 Basics
 "-------------------------------------------------------------------------------
-" let mapleader = ","              " キーマップリーダー
+let mapleader = ","              " キーマップリーダー
 set scrolloff=5                  " スクロール時の余白確保
 set textwidth=0                  " 一行に長い文章を書いていても自動折り返しをしない
 set nobackup                     " バックアップ取らない
@@ -201,8 +210,8 @@ vnoremap <silent> // y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
 
 " Ctrl-iでヘルプ
 nnoremap <C-i>  :<C-u>help<Space>
-" カーソル下のキーワードをヘルプでひく
 nnoremap <C-i><C-i> :<C-u>help<Space><C-r><C-w><Enter>
+autocmd FileType help nnoremap <buffer> q <C-w>c
 
 "-------------------------------------------------------------------------------
 " 移動設定 Move
@@ -227,26 +236,17 @@ imap OA <Up>
 imap OB <Down>
 imap OC <Right>
 imap OD <Left>
+
 "---------------------------
 "  カーソル移動
 "---------------------------
-" Space-Spaceで次のbufferへ。BS-BSで前のbufferへ
-nmap <Space><Space> :bn<CR>
-nmap <BS><BS> :bp<CR>
 " C-w -> C-n/p で次/前のbufferへ
 nmap <C-w><C-n> :bn<CR>
 nmap <C-w><C-p> :bp<CR>
 
-" <C-w><C-w>でバッファを削除する
-map <C-w><C-w> <ESC>:bnext \| bdelete #<CR>
+" <C-w><C-k>でバッファを削除する
+map <C-w><C-k> <ESC>:bnext \| bdelete #<CR>
 command! Bw :bnext \| bdelete #
-
-" C-w !で分割を解除
-nnoremap <C-w>! <C-w>o
-
-" C-w oで次のウィンドウへ
-nnoremap <C-w>o <C-w>w
-nnoremap <C-w><C-o> <C-w>w
 
 "---------------------------
 "  その他
@@ -260,8 +260,8 @@ set virtualedit+=block
 "ビジュアルモード時vで行末まで選択
 vnoremap v $h
 
-" insert mode でjjでesc
-inoremap jj <Esc>
+" q:を閉じるに
+nnoremap <silent> q: :q
 
 "-------------------------------------------------------------------------------
 " カラー関連 Colors
@@ -334,14 +334,17 @@ function! s:toggle_qf_window()
 endfunction
 nnoremap <silent> cw :call <SID>toggle_qf_window()<CR>
 
+" 入力モード時にEscでIME OFF (C-[だときかない)
+" C-jでEsc
+inoremap <silent> <Esc> <Esc>:set iminsert=0<CR>
+inoremap <silent> <C-j> <Esc>:set iminsert=0<CR>
+
 "-------------------------------------------------------------------------------
 " エンコーディング関連 Encoding
 "-------------------------------------------------------------------------------
 set ffs=unix,dos,mac  " 改行文字
 set encoding=utf-8    " デフォルトエンコーディング
 
-" cvsの時は文字コードをeuc-jpに設定
-autocmd FileType cvs      :set fileencoding=euc-jp
 " 以下のファイルの時は文字コードをutf-8に設定
 autocmd FileType svn      :set fileencoding=utf-8
 autocmd FileType js       :set fileencoding=utf-8
@@ -376,18 +379,18 @@ autocmd BufNewFile *.coffee   0r ~/.vim/template/coffee.coffee
 autocmd BufNewFile *.pl   0r ~/.vim/template/perl.pl
 
 function! s:pm_template()
-    let path = substitute(expand('%'), '.*lib/', '', 'g')
-    let path = substitute(path, '[\\/]', '::', 'g')
-    let path = substitute(path, '\.pm$', '', 'g')
-    call append(0, 'package ' . path . ';')
-    call append(1, 'use strict;')
-    call append(2, 'use warnings;')
-    call append(3, 'use utf8;')
-    call append(4, '')
-    call append(5, '')
-    call append(6, '')
-    call append(7, '1;')
-    call cursor(6, 0)
+  let path = substitute(expand('%'), '.*lib/', '', 'g')
+  let path = substitute(path, '[\\/]', '::', 'g')
+  let path = substitute(path, '\.pm$', '', 'g')
+  call append(0, 'package ' . path . ';')
+  call append(1, 'use strict;')
+  call append(2, 'use warnings;')
+  call append(3, 'use utf8;')
+  call append(4, '')
+  call append(5, '')
+  call append(6, '')
+  call append(7, '1;')
+  call cursor(6, 0)
 endfunction
 autocmd BufNewFile *.pm call s:pm_template()
 
@@ -397,37 +400,22 @@ autocmd BufNewFile *.pm call s:pm_template()
 "------------------------------------
 " Alignta
 "------------------------------------
-vnoremap <Leader>a :Align<Space>
-
-"------------------------------------
-" MiniBufExplorer
-"------------------------------------
-"set minibfexp
-let g:miniBufExplMapWindowNavVim=1 "hjklで移動
-let g:miniBufExplSplitBelow=0  " Put new window above
-let g:miniBufExplMapWindowNavArrows=1
-let g:miniBufExplMapCTabSwitchBufs=1
-let g:miniBufExplModSelTarget=1
-let g:miniBufExplSplitToEdge=1
-let g:miniBufExplMaxSize = 10
-
-":MtでMiniBufExplorerの表示トグル
-command! Mt :TMiniBufExplorer
+vnoremap <Leader>a :Align<Space>@1<Space>
 
 "------------------------------------
 " NERD_commenter.vim
 "------------------------------------
 " コメントの間にスペースを空ける
 let NERDSpaceDelims = 1
-"<Leader>xでコメントをトグル(NERD_commenter.vim)
+" <Leader>xでコメントをトグル(NERD_commenter.vim)
 map <Leader>x <Leader>c<space>
-""未対応ファイルタイプのエラーメッセージを表示しない
+" 未対応ファイルタイプのエラーメッセージを表示しない
 let NERDShutUp=1
 
 "------------------------------------
 " vim-indent-guides
 "------------------------------------
-nnoremap <silent> <Space>id :<C-u>IndentGuidesToggle<Enter>
+nnoremap <silent> <Leader>t :<C-u>IndentGuidesToggle<Enter>
 let g:indent_guides_auto_colors = 0
 let g:indent_guides_start_level = 2
 let g:indent_guides_guide_size = 1
@@ -470,7 +458,7 @@ nnoremap <silent> [unite]a  :<C-u>UniteWithCurrentDir -no-split -buffer-name=fil
 " ファイル一覧
 nnoremap <silent> [unite]f  :<C-u>Unite -no-split -buffer-name=files file<CR>
 " バッファ一覧
-nnoremap <silent> [unite]b  :<C-u>Unite -no-split buffer<CR>
+nnoremap <silent> [unite]b  :<C-u>Unite -no-split buffer_tab<CR>
 " 常用セット
 nnoremap <silent> [unite]u  :<C-u>Unite -no-split buffer file_mru<CR>
 " 最近使用したファイル一覧
@@ -481,6 +469,20 @@ nnoremap <silent> [unite]d  :<C-u>UniteWithBufferDir -no-split file<CR>
 nnoremap <silent> [unite]o  :<C-u>Unite outline<CR>
 " マーク一覧を表示
 nnoremap <silent> [unite]m  :<C-u>Unite mark<CR>
+" ヘルプを開く
+function! UniteRefDoc()
+  if &filetype =~ 'perl'
+    " Unite ref/perldoc
+    Unite perldoc
+  elseif &filetype =~ 'python'
+    Unite ref/pydo
+  elseif &filetype =~ 'ruby'
+    Unite ref/refe
+  else
+    Unite ref/man
+  endif
+endfunction
+nnoremap <silent> [unite]h :<C-u>call UniteRefDoc()<CR>
 
 autocmd FileType unite call s:unite_my_settings()
 function! s:unite_my_settings()"{{{
@@ -696,25 +698,6 @@ let g:neosnippet#enable_snipmate_compatibility = 1
 let g:neosnippet#snippets_directory='~/.vim/snippets/'
 
 "------------------------------------
-" Vim-Ref
-"------------------------------------
-let g:ref_source_webdict_sites = {
-\   'alc': {
-\     'url': 'http://eow.alc.co.jp/search?q=%s',
-\     'keyword_encoding': 'utf-8',
-\   }
-\ }
-let g:ref_source_webdict_sites.default = 'alc'
-
-" alc出力に対するフィルタ 最初の数行を削除
-function! g:ref_source_webdict_sites.alc.filter(output)
-  return join(split(a:output, "\n")[34 :], "\n")
-endfunction
-
-" ,ra でalcから検索
-nmap <Leader>sa :<C-u>Ref webdict<space>
-
-"------------------------------------
 " C/C++ 補完
 "------------------------------------
 let g:neocomplcache_force_overwrite_completefunc=1
@@ -724,3 +707,10 @@ let g:clang_complete_auto=1
 " vim altr 対応ファイルを開く
 "------------------------------------
 nmap <F2> <Plug>(altr-forward)
+
+"------------------------------------
+" Perldoc
+"------------------------------------
+" 検索領域の設定
+setlocal iskeyword-=/
+setlocal iskeyword+=:
