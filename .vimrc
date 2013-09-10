@@ -1,3 +1,8 @@
+" Windowsのgvimでの文字化け対応
+if has('gui_running') && !has('unix')
+  set encoding=utf-8
+endif
+
 set nocompatible                 " Vim vi互換なし
 
 "-------------------------------------------------------------------------------
@@ -17,7 +22,7 @@ endif
 NeoBundle 'Shougo/neobundle.vim'
 
 """ Edit
-NeoBundle 'The-NERD-Commenter' " NERD_commenter.vim :コメント処理
+NeoBundle 'The-NERD-Commenter' " コメントプラグイン
 NeoBundle 'nathanaelkane/vim-indent-guides' " インデントを表示する
 NeoBundle 'tpope/vim-surround' "テキストを括弧で囲む／削除する
 NeoBundle 'h1mesuke/vim-alignta' " コード整形
@@ -36,7 +41,7 @@ else
     NeoBundle 'Shougo/neocomplcache.vim'
 endif
 NeoBundle 'Shougo/neosnippet' " スニペット
-NeoBundle 'camelcasemotion' " CamelCase/snake_case単位でのワード移動
+NeoBundle 'camelcasemotion' " CamelCase/SnakeCaseでテキストオブジェクトを判定
 NeoBundle 'EasyMotion' " 単語ジャンプを簡単に
 NeoBundle 'banyan/recognize_charcode.vim' " 文字コードの自動判別
 
@@ -262,6 +267,13 @@ vnoremap v $h
 
 " q:を閉じるに
 nnoremap <silent> q: :q
+
+" Wndows&gvimで挿入モードでIMEが勝手にONになる
+if has('win32')
+  let g:netrw_scp_cmd="c:\\vim\\pscp.exe -q -batch"
+  set iminsert=0
+  set imsearch=0
+endif
 
 "-------------------------------------------------------------------------------
 " カラー関連 Colors
@@ -715,3 +727,4 @@ nmap <F2> <Plug>(altr-forward)
 " 検索領域の設定
 setlocal iskeyword-=/
 setlocal iskeyword+=:
+
