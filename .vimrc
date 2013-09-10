@@ -270,7 +270,6 @@ nnoremap <silent> q: :q
 
 " Wndows&gvimで挿入モードでIMEが勝手にONになる
 if has('win32')
-  let g:netrw_scp_cmd="c:\\vim\\pscp.exe -q -batch"
   set iminsert=0
   set imsearch=0
 endif
