@@ -120,6 +120,8 @@ linux-gnu*)
   alias ls="ls -FGh --color=auto"
   alias cpanm="nocorrect cpanm"
   ;;
+cygwin*)
+  ls() {/usr/bin/ls -I'NTUSER.DAT*' -I'ntuser.dat*'}
 esac
 
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
