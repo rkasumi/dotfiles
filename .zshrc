@@ -122,6 +122,8 @@ linux-gnu*)
   ;;
 cygwin*)
   ls() {/usr/bin/ls -I'NTUSER.DAT*' -I'ntuser.dat*'}
+  la() {/usr/bin/ls -a}
+  ;;
 esac
 
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
