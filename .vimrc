@@ -532,6 +532,7 @@ let g:quickrun_config = {}
 "------------------------------------
 " LightLine
 "------------------------------------
+set laststatus=2 " ステータスラインを2行に
 let g:lightline = {
         \ 'colorscheme': 'wombat',
         \ 'mode_map': {'c': 'NORMAL'},
@@ -727,3 +728,9 @@ nmap <F2> <Plug>(altr-forward)
 setlocal iskeyword-=/
 setlocal iskeyword+=:
 
+"------------------------------------
+" EasyMotion
+"------------------------------------
+let g:EasyMotion_leader_key = ';'
+let g:EasyMotion_special_select_line = 0
+let g:EasyMotion_special_select_phrase = 0
