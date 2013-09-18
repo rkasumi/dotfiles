@@ -121,8 +121,7 @@ linux-gnu*)
   alias cpanm="nocorrect cpanm"
   ;;
 cygwin*)
-  ls() {/usr/bin/ls -I'NTUSER.DAT*' -I'ntuser.dat*'}
-  la() {/usr/bin/ls -a}
+  alias ls="ls -I'NTUSER.DAT*' -I'ntuser.dat*'"
   ;;
 esac
 
