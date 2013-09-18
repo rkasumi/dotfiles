@@ -12,3 +12,5 @@
 !/.gitignore
 !/.gitignore.global
 !/.tmux.conf
+
+/.vim/.netrwhist
