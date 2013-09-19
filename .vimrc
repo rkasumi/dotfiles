@@ -474,7 +474,7 @@ nnoremap <silent> [unite]b  :<C-u>Unite -no-split buffer_tab<CR>
 " 常用セット
 nnoremap <silent> [unite]u  :<C-u>Unite -no-split buffer file_mru<CR>
 " 最近使用したファイル一覧
-nnoremap <silent> [unite]m  :<C-u>Unite -no-split file_mru<CR>
+nnoremap <silent> [unite]r  :<C-u>Unite -no-split file_mru<CR>
 " 現在のバッファのカレントディレクトリからファイル一覧
 nnoremap <silent> [unite]d  :<C-u>UniteWithBufferDir -no-split file<CR>
 " アウトラインを表示
