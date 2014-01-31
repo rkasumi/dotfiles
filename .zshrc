@@ -16,7 +16,7 @@ esac
 bindkey -e
 
 # プロンプト設定
-PROMPT="%B%F{red}[%~] # %f%b"
+PROMPT="%B%F{red}[%~] %(!.#.$) %f%b"
 PROMPT2="%B%{[31m%}#%{[m%}%b "
 SPROMPT="%B%{[31m%}%r is correct? [n,y,a,e]:%{[m%}%b "
 
@@ -106,6 +106,12 @@ function extract () {
   fi
 }
 alias ex='extract'
+
+function ssh() {
+    local window_name=$(tmux display -p '#{window_name}')
+    command ssh $@
+    tmux rename-window $window_name
+}
 
 case "${OSTYPE}" in
 darwin*)
