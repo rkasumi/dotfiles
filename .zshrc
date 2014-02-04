@@ -127,7 +127,8 @@ linux-gnu*)
   alias cpanm="nocorrect cpanm"
   ;;
 cygwin*)
-  alias ls="ls -I'NTUSER.DAT*' -I'ntuser.dat*'"
+  alias ls="ls -FGh --color -I'NTUSER.DAT*' -I'ntuser.dat*'"
+  alias open=cygstart
   ;;
 esac
 
