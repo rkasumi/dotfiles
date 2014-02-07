@@ -51,18 +51,11 @@ setopt list_packed # 補完をつめて表示
 setopt nolistbeep # 補完時にエラー音を鳴らさない
 setopt magic_equal_subst # コマンドラインの引数で --prefix=/usr などの = 以降でも補完できる
 
-# カラー設定
-export GREP_COLOR='01;33'
-export LSCOLORS=exfxcxdxbxegedabagacad
-export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
-zstyle ':completion:*' list-colors 'di=34' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34'
-
 # alias設定
 setopt complete_aliases
 alias la='ls -a'
 alias grep='grep --color=auto'
 alias less='less -M'
-alias where="command -v"
 alias du="du -h"
 alias df="df -h"
 alias su="su -l"
@@ -70,17 +63,30 @@ alias c="clear"
 alias javac='javac -J-Dfile.encoding=UTF-8'
 alias java='java -Dfile.encoding=UTF-8'
 
+# alias設定(OS毎)
+case "${OSTYPE}" in
+darwin*)
+  # mac用
+  alias ls="ls -FGh"
+  alias vim='env LANG=ja_JP.UTF-8 /Applications/MacVim.app/Contents/MacOS/Vim "$@"'
+  alias tmux='tmuxx'
+  alias cocot='cocot -t UTF-8 -p EUC-JP -- ssh'
+  ;;
+linux-gnu*)
+  # ubuntu用
+  alias ls="ls -FGh --color=auto"
+  alias cpanm="nocorrect cpanm"
+  ;;
+cygwin*)
+  alias ls="ls -FGh --color -I'NTUSER.DAT*' -I'ntuser.dat*'"
+  alias open=cygstart
+  ;;
+esac
+
 # functions
 # cd 後にlsを実行
 function cd() {builtin cd $@ && ls -v -FGh}
-# ^ で上でのディレクトリへ移動
-function cdup() {
-    echo
-    cd ..
-    zle reset-prompt
-}
-zle -N cdup
-bindkey '^' cdup
+
 # extract で何でも解凍
 function extract () {
   if [ -f $1 ] ; then
@@ -107,55 +113,47 @@ function extract () {
 }
 alias ex='extract'
 
+# ssh後にtmuxのWindow名を変更、の戻し処理(exit後)
 function ssh() {
-    local window_name=$(tmux display -p '#{window_name}')
-    command ssh $@
-    tmux rename-window $window_name
+    if [ -n "$TMUX" ]; then
+        local window_name=$(tmux display -p '#{window_name}')
+        command ssh $@
+        tmux rename-window $window_name
+    else
+        command ssh $@
+    fi
 }
 
-case "${OSTYPE}" in
-darwin*)
-  # mac用
-  alias ls="ls -FGh"
-  alias vim='env LANG=ja_JP.UTF-8 /Applications/MacVim.app/Contents/MacOS/Vim "$@"'
-  alias tmux='tmuxx'
-  alias cocot='cocot -t UTF-8 -p EUC-JP -- ssh'
-  ;;
-linux-gnu*)
-  # ubuntu用
-  alias ls="ls -FGh --color=auto"
-  alias cpanm="nocorrect cpanm"
-  ;;
-cygwin*)
-  alias ls="ls -FGh --color -I'NTUSER.DAT*' -I'ntuser.dat*'"
-  alias open=cygstart
-  ;;
-esac
+# カラー設定
+export GREP_COLOR='01;33'
+export LSCOLORS=exfxcxdxbxegedabagacad
+export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
+zstyle ':completion:*' list-colors 'di=34' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34'
 
 # cygwin用 カラースキーム
 case "${OSTYPE}" in
-cygwin*)
-    echo -ne    '\e]10;#d0d0d0\a' # ForegroundColour
-    echo -ne    '\e]11;#1c1c1c\a' # BackgroundColour
-    echo -ne    '\e]12;#ffaf00\a' # CursorColour
-    echo -ne '\e]4;262;#80e0a0\a' # IMECursorColour
-    echo -ne   '\e]4;0;#0c0c0c\a' # Black
-    echo -ne   '\e]4;8;#0a0a0a\a' # BoldBlack
-    echo -ne   '\e]4;1;#d78787\a' # Red
-    echo -ne   '\e]4;9;#df8787\a' # BoldRed
-    echo -ne   '\e]4;2;#afd787\a' # Green
-    echo -ne  '\e]4;10;#afdf87\a' # BoldGreen
-    echo -ne   '\e]4;3;#f7f7af\a' # Yellow
-    echo -ne  '\e]4;11;#ffffaf\a' # BoldYellow
-    echo -ne   '\e]4;4;#87afd7\a' # Blue
-    echo -ne  '\e]4;12;#87afdf\a' # BoldBlue
-    echo -ne   '\e]4;5;#d7afd7\a' # Magenta
-    echo -ne  '\e]4;13;#dfafdf\a' # BoldMagenta
-    echo -ne   '\e]4;6;#afd7d7\a' # Cyan
-    echo -ne  '\e]4;14;#afdfdf\a' # BoldCyan
-    echo -ne   '\e]4;7;#e6e6e6\a' # White
-    echo -ne  '\e]4;15;#eeeeee\a' # BoldWhite
-  ;;
+    cygwin*)
+        echo -ne    '\e]10;#d0d0d0\a' # ForegroundColour
+        echo -ne    '\e]11;#1c1c1c\a' # BackgroundColour
+        echo -ne    '\e]12;#ffaf00\a' # CursorColour
+        echo -ne '\e]4;262;#80e0a0\a' # IMECursorColour
+        echo -ne   '\e]4;0;#0c0c0c\a' # Black
+        echo -ne   '\e]4;8;#0a0a0a\a' # BoldBlack
+        echo -ne   '\e]4;1;#d78787\a' # Red
+        echo -ne   '\e]4;9;#df8787\a' # BoldRed
+        echo -ne   '\e]4;2;#afd787\a' # Green
+        echo -ne  '\e]4;10;#afdf87\a' # BoldGreen
+        echo -ne   '\e]4;3;#f7f7af\a' # Yellow
+        echo -ne  '\e]4;11;#ffffaf\a' # BoldYellow
+        echo -ne   '\e]4;4;#87afd7\a' # Blue
+        echo -ne  '\e]4;12;#87afdf\a' # BoldBlue
+        echo -ne   '\e]4;5;#d7afd7\a' # Magenta
+        echo -ne  '\e]4;13;#dfafdf\a' # BoldMagenta
+        echo -ne   '\e]4;6;#afd7d7\a' # Cyan
+        echo -ne  '\e]4;14;#afdfdf\a' # BoldCyan
+        echo -ne   '\e]4;7;#e6e6e6\a' # White
+        echo -ne  '\e]4;15;#eeeeee\a' # BoldWhite
+    ;;
 esac
 
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local

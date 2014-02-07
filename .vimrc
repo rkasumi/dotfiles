@@ -299,9 +299,6 @@ hi PmenuSbar ctermbg=0 ctermfg=9
 "-------------------------------------------------------------------------------
 " 編集関連 Edit
 "-------------------------------------------------------------------------------
-" C-hでバックスペース
-inoremap <C-h> <BS>
-
 " Visualモードでのpで選択範囲をレジスタの内容に置き換える
 vnoremap p <Esc>:let current_reg = @"<CR>gvdi<C-R>=current_reg<CR><Esc>
 
@@ -319,11 +316,6 @@ augroup END
 
 " :Ptでインデントモード切替
 command! Pt :set paste!
-
-" 保存時に行末の空白を除去する
-" autocmd BufWritePre * :%s/\s\+$//ge
-" 保存時にtabをスペースに変換する
-" autocmd BufWritePre * :%s/\t/  /ge
 
 " <leader>j でJSONをformat
 " http://wozozo.hatenablog.com/entry/2012/02/08/121504
@@ -355,16 +347,6 @@ inoremap <silent> <C-j> <Esc>:set iminsert=0<CR>
 "-------------------------------------------------------------------------------
 set ffs=unix,dos,mac  " 改行文字
 set encoding=utf-8    " デフォルトエンコーディング
-
-" 以下のファイルの時は文字コードをutf-8に設定
-autocmd FileType svn      :set fileencoding=utf-8
-autocmd FileType js       :set fileencoding=utf-8
-autocmd FileType css      :set fileencoding=utf-8
-autocmd FileType html     :set fileencoding=utf-8
-autocmd FileType xml      :set fileencoding=utf-8
-autocmd FileType java     :set fileencoding=utf-8
-autocmd FileType scala    :set fileencoding=utf-8
-autocmd FileType perl     :set fileencoding=utf-8
 
 " ワイルドカードで表示するときに優先度を低くする拡張子
 set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc
