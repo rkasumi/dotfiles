@@ -85,6 +85,10 @@ NeoBundle 'h1mesuke/unite-outline' "Unite outline
 NeoBundle 'tacroe/unite-mark' " Unite mark
 NeoBundle 'dameninngenn/unite-perldoc' " Unite PerlDoc
 
+""" QFixHowm
+NeoBundle 'fuenor/qfixgrep'
+NeoBundle 'fuenor/qfixhowm'
+
 filetype plugin on
 filetype indent on
 
@@ -716,3 +720,27 @@ setlocal iskeyword+=:
 let g:EasyMotion_leader_key = ';'
 let g:EasyMotion_special_select_line = 0
 let g:EasyMotion_special_select_phrase = 0
+
+"------------------------------------
+" QFixHowm
+"------------------------------------
+let QFixHowm_Key = 'g'
+let howm_dir = '~/.howm'
+let howm_fileencoding    = 'utf-8'
+let howm_fileformat      = 'unix'
+" キーコードやマッピングされたキー列が完了するのを待つ時間(ミリ秒)
+set timeout timeoutlen=3000 ttimeoutlen=100
+" プレビューや絞り込みをQuickFix/ロケーションリストの両方で有効化
+let QFixWin_EnableMode = 1
+" ファイル拡張子をmdにする
+let howm_filename = '%Y/%m/%Y-%m-%d-%H%M%S.md'
+" ファイルタイプをmarkdownにする
+let QFixHowm_FileType = 'markdown'
+" タイトル記号
+let QFixHowm_Title = '#'
+" タイトル行検索正規表現の辞書を初期化
+let QFixMRU_Title = {}
+" MRUでタイトル行とみなす正規表現(Vimの正規表現で指定)
+let QFixMRU_Title['mkd'] = '^###[^#]'
+" grepでタイトル行とみなす正規表現(使用するgrepによっては変更する必要があります)
+let QFixMRU_Title['mkd_regxp'] = '^###[^#]'
