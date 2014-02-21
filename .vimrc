@@ -112,14 +112,11 @@ set viminfo='50,<1000,s100,\"50  " viminfoファイルの設定
 set modelines=0                  " モードラインは無効
 
 " OSのクリップボードを使用する
-set clipboard+=unnamed
+set clipboard=unnamed,autoselect
 " ターミナルでマウスを使用できるようにする
 set mouse=a
 set guioptions+=a
 set ttymouse=xterm2
-
-"ヤンクした文字は、システムのクリップボードに入れる"
-set clipboard=unnamed
 
 " Ev/Rvでvimrcの編集と反映
 " Zvでzshrcを編集
