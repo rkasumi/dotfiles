@@ -7,6 +7,7 @@ darwin*)
   export JAVA_HOME='/Library/Java/Home'
   export JAVA_OPTS='-Dfile.encoding=UTF-8'
   export PATH=/usr/local/bin:$PATH
+  export HOMEBREW_CASK_OPTS="--appdir=/Applications --caskroom=/usr/local/Caskroom"
   ;;
 linux*)
   ;;

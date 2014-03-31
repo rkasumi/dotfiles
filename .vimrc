@@ -23,7 +23,6 @@ NeoBundle 'Shougo/neobundle.vim'
 
 """ Edit
 NeoBundle 'The-NERD-Commenter' " コメントプラグイン
-NeoBundle 'nathanaelkane/vim-indent-guides' " インデントを表示する
 NeoBundle 'tpope/vim-surround' "テキストを括弧で囲む／削除する
 NeoBundle 'h1mesuke/vim-alignta' " コード整形
 
@@ -40,7 +39,6 @@ else
     NeoBundleFetch 'Shougo/neocomplete.vim'
     NeoBundle 'Shougo/neocomplcache.vim'
 endif
-NeoBundle 'Shougo/neosnippet' " スニペット
 NeoBundle 'camelcasemotion' " CamelCase/SnakeCaseでテキストオブジェクトを判定
 NeoBundle 'EasyMotion' " 単語ジャンプを簡単に
 NeoBundle 'banyan/recognize_charcode.vim' " 文字コードの自動判別
@@ -79,7 +77,6 @@ NeoBundle 'hotchpotch/perldoc-vim' " PerlDoc
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'tsukkee/unite-help' "Unite  Help
 NeoBundle 'thinca/vim-unite-history' "Unite 履歴
-NeoBundle 'ujihisa/unite-colorscheme' "Unite colorscheme
 NeoBundle 'sgur/unite-qf' "Unite QuickFix
 NeoBundle 'h1mesuke/unite-outline' "Unite outline
 NeoBundle 'tacroe/unite-mark' " Unite mark
@@ -88,6 +85,10 @@ NeoBundle 'dameninngenn/unite-perldoc' " Unite PerlDoc
 """ QFixHowm
 NeoBundle 'fuenor/qfixgrep'
 NeoBundle 'fuenor/qfixhowm'
+
+""" ColorScheme
+NeoBundle 'altercation/vim-colors-solarized'
+NeoBundle 'jnurmine/Zenburn'
 
 filetype plugin on
 filetype indent on
@@ -278,16 +279,8 @@ endif
 "-------------------------------------------------------------------------------
 " カラー関連 Colors
 "-------------------------------------------------------------------------------
-" ターミナルタイプによるカラー設定
-if &term =~ "xterm-debian" || &term =~ "xterm-xfree86" || &term =~ "xterm-256color"
- set t_Co=16
- set t_Sf=^[[3%dm
- set t_Sb=^[[4%dm
-elseif &term =~ "xterm-color"
- set t_Co=8
- set t_Sf=^[[3%dm
- set t_Sb=^[[4%dm
-endif
+set background=dark
+colorscheme zenburn
 
 " ハイライト on
 syntax enable
@@ -348,6 +341,7 @@ inoremap <silent> <C-j> <Esc>:set iminsert=0<CR>
 "-------------------------------------------------------------------------------
 set ffs=unix,dos,mac  " 改行文字
 set encoding=utf-8    " デフォルトエンコーディング
+set fileencodings=iso-2022-jp,cp932,sjis,euc-jp,utf-8
 
 " ワイルドカードで表示するときに優先度を低くする拡張子
 set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc
@@ -406,23 +400,6 @@ let NERDSpaceDelims = 1
 map <Leader>x <Leader>c<space>
 " 未対応ファイルタイプのエラーメッセージを表示しない
 let NERDShutUp=1
-
-"------------------------------------
-" vim-indent-guides
-"------------------------------------
-nnoremap <silent> <Leader>t :<C-u>IndentGuidesToggle<Enter>
-let g:indent_guides_auto_colors = 0
-let g:indent_guides_start_level = 2
-let g:indent_guides_guide_size = 1
-autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=red ctermbg=3
-autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=green ctermbg=4
-if 'dark' == &background
-  hi IndentGuidesOdd  ctermbg=black
-  hi IndentGuidesEven ctermbg=darkgrey
-else
-  hi IndentGuidesOdd  ctermbg=white
-hi IndentGuidesEven ctermbg=lightgrey
-endif
 
 "------------------------------------
 " camelcasemotion.vim
