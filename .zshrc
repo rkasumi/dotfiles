@@ -69,7 +69,6 @@ case "${OSTYPE}" in
 darwin*)
   # mac用
   alias ls="ls -FGh"
-  alias vim='env LANG=ja_JP.UTF-8 /Applications/MacVim.app/Contents/MacOS/Vim "$@"'
   alias tmux='tmuxx'
   alias cocot='cocot -t UTF-8 -p EUC-JP -- ssh'
   ;;
