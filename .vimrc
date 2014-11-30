@@ -15,7 +15,7 @@ filetype off
 
 if has('vim_starting')
   set runtimepath+=~/.vim/bundle/neobundle.vim
-  call neobundle#rc(expand('~/.vim/bundle'))
+  call neobundle#begin(expand('~/.vim/bundle'))
 endif
 
 """ NeoBundle
@@ -89,6 +89,8 @@ NeoBundle 'fuenor/qfixhowm'
 """ ColorScheme
 NeoBundle 'altercation/vim-colors-solarized'
 NeoBundle 'jnurmine/Zenburn'
+
+call neobundle#end()
 
 filetype plugin on
 filetype indent on
